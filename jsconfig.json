@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+        "strict": true, // 상당히 엄격하게 검사해줘 깐깐하게 검사를 해줘
+        "lib": [
+            "ES2021"
+        ]
+    },
+    "include": [
+        "src/**/*"
+    ]
+}
