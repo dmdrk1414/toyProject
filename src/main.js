@@ -31,13 +31,21 @@ function sleep(duration, callback) {
 
 // 요청이 오면 실행되는 콜백 함수
 const server = http.createServer((req, res) => {
+  const POSTS_ID_REGEX = /^\/posts\/([a-zA-Z0-9-_]+)$/; // 정규표현식
+  const postIdRegexResult =
+    (req.url && POSTS_ID_REGEX.exec(req.url)) || undefined; // exec함수는 일치하는 정보를 배열로
+
   // url 세팅을 하기
   if (req.url === "/posts" && req.method === "GET") {
     res.statusCode = 200;
     res.end("List of posts");
-  } else if (req.url && /^\/posts\/[a-zA-Z0-9-_]+$/.test(req.url)) {
+  } else if (postIdRegexResult) {
+    // GET /posts:id
+    const postId = postIdRegexResult[1]; // post의 id값을 가져온다.
+    console.log(`postId:  ${postId}`);
+
     res.statusCode = 200;
-    res.end("Some content of the post");
+    res.end(`Reading a post : ${postId}`);
   } else if (req.url === "/posts" && req.method === "POST") {
     res.statusCode = 200;
     res.end("Creating post");
@@ -45,7 +53,6 @@ const server = http.createServer((req, res) => {
     res.statusCode = 404; // 응답 상태값 설정
     res.end("Not found"); // 응답 데이터 전송
   }
-  console.log(req.url);
 });
 
 // 서버를 요청 대기 상태로 만든다

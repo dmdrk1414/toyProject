@@ -69,3 +69,30 @@ try {
 
 
 ```
+
+정규표현식.test()는 정규표현식이 단순하게 맞냐 아니냐을 판단
+
+정규표현식.exec()는 정규표현식이 정확하게 맞냐 아니냐을 판단
+
+원하는 부분을 사용하기 위한 캡쳐그룹 정규표현식
+
+```
+const POSTS_ID_REGEX = /^\/posts\/([a-zA-Z0-9-_]+)$/;
+  const postIdRegexResult =
+    (req.url && POSTS_ID_REGEX.exec(req.url)) || undefined;
+
+  // url 세팅을 하기
+  if (req.url === "/posts" && req.method === "GET") {
+    res.statusCode = 200;
+    res.end("List of posts");
+  } else if (postIdRegexResult) {
+    // GET /posts:id
+    const postId = postIdRegexResult[1];
+    console.log(`postId:  ${postId}`);
+
+    res.statusCode = 200;
+    res.end("sdf");
+  }
+```
+
+post id 가져오는법
