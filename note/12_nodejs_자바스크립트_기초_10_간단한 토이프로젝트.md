@@ -1,3 +1,4 @@
+```
 // @ts-check
 
 /* eslint-disable no-new */
@@ -65,3 +66,6 @@ try {
     })
   );
 }
+
+
+```
