@@ -29,6 +29,33 @@ function sleep(duration, callback) {
  * POST /posts = 글을 올리기
  */
 
+// 임시저장 장소
+// typedef을 보며 임시 저장소를 만들자
+// 나중에 database을 연결하자.
+
+/**
+ * @typedef Post
+ * @property {string} id
+ * @property {string} title
+ * @property {string} content
+ */
+
+/**
+ * @type {Post[]}
+ */
+const posts = [
+  {
+    id: "My_first_post",
+    title: "My first post",
+    content: "Hello!!",
+  },
+  {
+    id: "My_second_post",
+    title: "My second post",
+    content: "Hello!!",
+  },
+];
+
 // 요청이 오면 실행되는 콜백 함수
 const server = http.createServer((req, res) => {
   const POSTS_ID_REGEX = /^\/posts\/([a-zA-Z0-9-_]+)$/; // 정규표현식
@@ -37,8 +64,12 @@ const server = http.createServer((req, res) => {
 
   // url 세팅을 하기
   if (req.url === "/posts" && req.method === "GET") {
+    const result = posts.map((post) => ({
+      id: post.id,
+      title: post.title,
+    }));
     res.statusCode = 200;
-    res.end("List of posts");
+    res.end(JSON.stringify(result));
   } else if (postIdRegexResult) {
     // GET /posts:id
     const postId = postIdRegexResult[1]; // post의 id값을 가져온다.
