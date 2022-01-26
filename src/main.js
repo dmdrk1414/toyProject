@@ -51,7 +51,7 @@ const posts = [
   },
   {
     id: "My_second_post",
-    title: "My second post",
+    title: "ㄴㅇㄹㄴㅇㄹ",
     content: "Hello!!",
   },
 ];
@@ -64,19 +64,35 @@ const server = http.createServer((req, res) => {
 
   // url 세팅을 하기
   if (req.url === "/posts" && req.method === "GET") {
-    const result = posts.map((post) => ({
-      id: post.id,
-      title: post.title,
-    }));
+    const result = {
+      posts: posts.map((post) => ({
+        id: post.id,
+        title: post.title,
+      })),
+      totalCount: posts.length,
+    };
     res.statusCode = 200;
+
+    // json 타입이라고 정보를 알려준다.               utf-8으로 에로상황을 위해 적어주는 것도 좋다.
+    res.setHeader("Content-Type", "application/json; encoding=utf-8");
+
+    // JSON을 돌려준다. http responser로서 돌려준다.
     res.end(JSON.stringify(result));
   } else if (postIdRegexResult) {
     // GET /posts:id
     const postId = postIdRegexResult[1]; // post의 id값을 가져온다.
-    console.log(`postId:  ${postId}`);
+    const post = posts.find((_post) => _post.id === postId); // posts의 배열에서 postId와 비슷한것을 가져온다
 
-    res.statusCode = 200;
-    res.end(`Reading a post : ${postId}`);
+    if (post) {
+      res.setHeader("Content-Type", "application/json; encoding=utf-8");
+      res.statusCode = 200;
+
+      // html의 body로 넘어가는 건 string이다.
+      res.end(JSON.stringify(post));
+    } else {
+      res.statusCode = 404;
+      res.end(`Post not found.`);
+    }
   } else if (req.url === "/posts" && req.method === "POST") {
     res.statusCode = 200;
     res.end("Creating post");
