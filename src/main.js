@@ -27,6 +27,11 @@ function sleep(duration, callback) {
  * GET /posts = 전체 글을 보는법
  * GET /posts:id = 특정 글을 보는법 (해당 id)
  * POST /posts = 글을 올리기
+ *
+ * 영구적인 파일을 저장하는 파일시스템
+ *
+ * post을 지우기
+ * user에 입장에서 업데이트
  */
 
 // 임시저장 장소
@@ -51,7 +56,7 @@ const posts = [
   },
   {
     id: "My_second_post",
-    title: "ㄴㅇㄹㄴㅇㄹ",
+    title: "My second post",
     content: "Hello!!",
   },
 ];
@@ -71,14 +76,14 @@ const server = http.createServer((req, res) => {
       })),
       totalCount: posts.length,
     };
-    res.statusCode = 200;
 
     // json 타입이라고 정보를 알려준다.               utf-8으로 에로상황을 위해 적어주는 것도 좋다.
     res.setHeader("Content-Type", "application/json; encoding=utf-8");
 
+    res.statusCode = 200;
     // JSON을 돌려준다. http responser로서 돌려준다.
     res.end(JSON.stringify(result));
-  } else if (postIdRegexResult) {
+  } else if (postIdRegexResult && req.method === "GET") {
     // GET /posts:id
     const postId = postIdRegexResult[1]; // post의 id값을 가져온다.
     const post = posts.find((_post) => _post.id === postId); // posts의 배열에서 postId와 비슷한것을 가져온다
@@ -94,11 +99,31 @@ const server = http.createServer((req, res) => {
       res.end(`Post not found.`);
     }
   } else if (req.url === "/posts" && req.method === "POST") {
+    // http localhost:4000/posts foo=dmdrk1414 title=dmdrk14141414 --print=HhBb
+    // http -v POST localhost:4000/posts foo=dmdrk1414 title=dmdrk1414
+
+    req.setEncoding("utf-8"); // setEncoding은 터밀널에 httpie을 이용하여 요청된 POST의 정보를 bufer을 읽을때 사용.
+    req.on("data", (data) => {
+      // string 타입으로 정해져야 posts객체에 접근이 가능하다.
+      /**
+       * @typedef CreatePostBody
+       * @property {string} title
+       * @property {string} content
+       */
+
+      // POST을 통해 데이터를 주면 처리하는 곳
+      /** @type {CreatePostBody} */
+      const body = JSON.parse(data); // 요청값을 오브젝트값으로 변환
+      posts.push({
+        // POST 에 데이터를 입력을하면 posts에 push가 가능하다.
+        // POST을 이용해 데이터를 전송을 하면 ./posts의 객체 posts의 데이터가 push가 된다.
+        id: body.title.toLowerCase().replace(/(\s+)/g, "_"), // 모든 띄어쓰기에 "_"을 대체해라
+        title: body.title,
+        content: body.content,
+      });
+    });
     res.statusCode = 200;
     res.end("Creating post");
-  } else {
-    res.statusCode = 404; // 응답 상태값 설정
-    res.end("Not found"); // 응답 데이터 전송
   }
 });
 
