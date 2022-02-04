@@ -80,7 +80,6 @@ const server = http.createServer((req, res) => {
 
     // json 타입이라고 정보를 알려준다.               utf-8으로 에로상황을 위해 적어주는 것도 좋다.
     res.setHeader("Content-Type", "application/json; encoding=utf-8");
-
     res.statusCode = 200;
     // JSON을 돌려준다. http responser로서 돌려준다.
     res.end(JSON.stringify(result));
