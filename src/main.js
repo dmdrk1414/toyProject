@@ -69,6 +69,7 @@ const server = http.createServer((req, res) => {
 
   // url 세팅을 하기
   if (req.url === "/posts" && req.method === "GET") {
+    // 전체의 글을 보여주는 /posts
     const result = {
       posts: posts.map((post) => ({
         id: post.id,
@@ -117,11 +118,13 @@ const server = http.createServer((req, res) => {
       posts.push({
         // POST 에 데이터를 입력을하면 posts에 push가 가능하다.
         // POST을 이용해 데이터를 전송을 하면 ./posts의 객체 posts의 데이터가 push가 된다.
-        id: body.title.toLowerCase().replace(/(\s+)/g, "_"), // 모든 띄어쓰기에 "_"을 대체해라
+        // 모든 띄어쓰기에 "_"을 대체해라
+        id: body.title.toLowerCase().replace(/(\s+)/g, "_"),
         title: body.title,
         content: body.content,
       });
     });
+    console.log(posts);
     res.statusCode = 200;
     res.end("Creating post");
   }
