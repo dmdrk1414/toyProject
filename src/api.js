@@ -1,6 +1,36 @@
 // @ts-check
 
 /**
+ * @typedef Post
+ * @property {string} id
+ * @property {string} title
+ * @property {string} content
+ */
+
+/**
+ * @type {Post[]}
+ */
+const posts = [
+  {
+    id: "My_first_post",
+    title: "My first post",
+    content: "Hello!!",
+  },
+  {
+    id: "My_second_post",
+    title: "My second post",
+    content: "Hello!!",
+  },
+];
+
+/**
+ * Post = 글쓰기
+ * GET /posts = 전체 글을 보는법
+ * GET /posts:id = 특정 글을 보는법 (해당 id)
+ * POST /posts = 글을 올리기
+ */
+
+/**
  * @typedef APIResponse
  * @property {number} statusCode
  * @property {*} body
