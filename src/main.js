@@ -13,36 +13,54 @@
  */
 
 const http = require("http"); // 노드 모듈을 가져온다
+const { type } = require("os");
 const { routes } = require("./api");
 
 const PORT = 4000; // 사용할 서버 포트
 
-/**
- * @typedef testType
- * @property {RegExp} one
- * @property {"GET" | "POST"} two
- */
-
-/** @type {testType[]} */
-const testBody = [
-  {
-    one: /test/,
-    two: "GET",
-  },
-];
-
 // 요청이 오면 실행되는 콜백 함수
 const server = http.createServer((req, res) => {
-  routes.forEach((e) => {
-    testBody.push({
-      one: e.url,
-      two: e.method,
-    });
-  });
+  async function main() {
+    // route에서 조건에 맞는 배열의 값을 가져온다.
+    const route = routes.find(
+      (_route) =>
+        req.url &&
+        req.method &&
+        _route.url.test(req.url) &&
+        _route.method === req.method
+    );
 
-  console.log(testBody);
-  res.statusCode = 200;
-  res.end("test end");
+    // 조건에 맞는 라우터가 없으면? Not found 표시를 줘라.
+    if (!req.url || !route) {
+      res.statusCode = 404;
+      res.end("Not found.!!");
+      return;
+    }
+
+    // routs 에 서 url 을 받을수있는방법은 이것이다 url을 가져와서 넘기는 방법
+    const regexResult = route.url.exec(req.url);
+
+    if (!regexResult) {
+      res.statusCode = 404;
+      res.end("Not found.");
+      return;
+    }
+
+    const result = await route.callback(regexResult);
+
+    res.statusCode = result.statusCode;
+
+    // body에 던지는 코드  만약 body가 string이면 Object이면
+    // body는 string만 가능하니 만약 object가 올시
+    if (typeof result.body === "string") {
+      res.end(result.body);
+    } else {
+      res.setHeader("content-Type", "applecation/json;charset=utf-8");
+      res.end(JSON.stringify(result.body));
+    }
+  }
+
+  main();
 });
 
 // 서버를 요청 대기 상태로 만든다

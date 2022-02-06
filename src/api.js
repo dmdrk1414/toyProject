@@ -30,17 +30,18 @@ const posts = [
  * POST /posts = 글을 올리기
  */
 
+// body의 타입은 Object || string 이다.
 /**
  * @typedef APIResponse
  * @property {number} statusCode
- * @property {*} body
+ * @property {string | Object} body
  */
 
 /**
  * @typedef Route
  * @property {RegExp} url
  * @property {"GET" | "POST"} method
- * @property {() => Promise<APIResponse>} callback
+ * @property {(matches: string[]) => Promise<APIResponse>} callback
  */
 // @property {(values: Object) => string} callback   // callback 타입을 정하는 방법.
 
@@ -51,20 +52,43 @@ const routes = [
   {
     url: /^\/posts$/,
     method: "GET",
+    // body는 말들어서 데이터를 전송해야되기 때문?
+    // 이부분이 가장 이해가 안된다.
     callback: async () => ({
       // TODO: implement
       statusCode: 200,
-      body: {},
+      body: {
+        id: "dmdrk1414",
+      },
     }),
   },
   {
     url: /^\/posts\/([a-zA-Z0-9-_]+)$/, // TODO: RegExp로 고쳐라
     method: "GET",
-    callback: async () => ({
-      // TODO: implement
-      statusCode: 200,
-      body: {},
-    }),
+    callback: async (matches) => {
+      // main함수에서 가져온 url정보를 콜백으로 가져온다.
+      const postId = matches[1];
+      if (!postId) {
+        return {
+          statusCode: 404,
+          body: "Not found",
+        };
+      }
+
+      const post = posts.find((_post) => _post.id === postId);
+
+      if (!post) {
+        return {
+          statusCode: 404,
+          body: "Not found",
+        };
+      }
+
+      return {
+        statusCode: 200,
+        body: post,
+      };
+    },
   },
   {
     url: /^\/posts$/, // TODO: RegExp로 고쳐라
